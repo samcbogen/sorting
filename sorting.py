@@ -12,6 +12,7 @@ if cmp(a, b) returns  0, then a == b.
 import random
 import copy
 
+
 def cmp_standard(a, b):
     '''
     used for sorting from lowest to highest
@@ -88,17 +89,17 @@ def _merged(xs, ys, cmp=cmp_standard):
             new_list.append(ys[counter2])
             counter += 1
             counter2 += 1
-    
+
     while counter < len(xs):
         new_list.append(xs[counter])
         counter += 1
-    
+
     while counter2 < len(ys):
         new_list.append(ys[counter2])
         counter2 += 1
-    
+
     return new_list
-    
+
 
 def merge_sorted(xs, cmp=cmp_standard):
     '''
@@ -134,7 +135,7 @@ def quick_sorted(xs, cmp=cmp_standard):
     Quicksort is like mergesort,
     but it uses a different strategy to split the list.
     Instead of splitting the list down the middle,
-    a "pivot" value is randomly selected, 
+    a "pivot" value is randomly selected,
     and the list is split into a "less than" sublist and a "greater than" sublist.
     The pseudocode is:
         if xs has 1 element
@@ -158,7 +159,7 @@ def quick_sorted(xs, cmp=cmp_standard):
         less_p = []
         greater_p = []
         equal_p = []
-        
+
         for i in xs:
             comp = cmp(i, p)
             if comp == -1:
@@ -167,15 +168,12 @@ def quick_sorted(xs, cmp=cmp_standard):
                 greater_p. append(i)
             elif comp == 0:
                 equal_p.append(i)
-        
+
         less = quick_sorted(less_p, cmp)
         greater = quick_sorted(greater_p, cmp)
         equal = equal_p
 
         return (less + equal + greater)
-
-
-
 
 
 def quick_sort(xs, cmp=cmp_standard):
