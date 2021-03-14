@@ -2,7 +2,6 @@
 '''
 Python provides built-in sort/sorted functions that use timsort internally.
 You cannot use these built-in functions anywhere in this file.
-
 Every function in this file takes a comparator `cmp` as input
 which controls how the elements of the list should be compared against each other:
 If cmp(a, b) returns -1, then a < b;
@@ -11,11 +10,11 @@ if cmp(a, b) returns  0, then a == b.
 '''
 
 import random
+import copy
 
 def cmp_standard(a, b):
     '''
     used for sorting from lowest to highest
-
     >>> cmp_standard(125, 322)
     -1
     >>> cmp_standard(523, 322)
@@ -31,7 +30,6 @@ def cmp_standard(a, b):
 def cmp_reverse(a, b):
     '''
     used for sorting from highest to lowest
-
     >>> cmp_reverse(125, 322)
     1
     >>> cmp_reverse(523, 322)
@@ -47,7 +45,6 @@ def cmp_reverse(a, b):
 def cmp_last_digit(a, b):
     '''
     used for sorting based on the last digit only
-
     >>> cmp_last_digit(125, 322)
     1
     >>> cmp_last_digit(523, 322)
@@ -61,29 +58,52 @@ def _merged(xs, ys, cmp=cmp_standard):
     Assumes that both xs and ys are sorted,
     and returns a new list containing the elements of both xs and ys.
     Runs in linear time.
-
     NOTE:
     In python, helper functions are frequently prepended with the _.
     This is a signal to users of a library that these functions are for "internal use only",
     and not part of the "public interface".
-
     This _merged function could be implemented as a local function within the merge_sorted scope rather than a global function.
     The downside of this is that the function can then not be tested on its own.
     Typically, you should only implement a function as a local function if it cannot function on its own
     (like the go functions from binary search).
     If it's possible to make a function stand-alone,
     then you probably should do that and write test cases for the stand-alone function.
-
     >>> _merged([1, 3, 5], [2, 4, 6])
     [1, 2, 3, 4, 5, 6]
     '''
+    new_list = []
+    counter = 0
+    counter2 = 0
 
+    while counter < len(xs) and counter2 < len(ys):
+        comp = cmp(xs[counter], ys[counter2])
+        if comp == -1:
+            new_list.append(xs[counter])
+            counter += 1
+        elif comp == 1:
+            new_list.append(ys[counter2])
+            counter2 += 1
+        elif comp == 0:
+            new_list.append(xs[counter])
+            new_list.append(ys[counter2])
+            counter += 1
+            counter2 += 1
+    
+    while counter < len(xs):
+        new_list.append(xs[counter])
+        counter += 1
+    
+    while counter2 < len(ys):
+        new_list.append(ys[counter2])
+        counter2 += 1
+    
+    return new_list
+    
 
 def merge_sorted(xs, cmp=cmp_standard):
     '''
     Merge sort is the standard O(n log n) sorting algorithm.
     Recall that the merge sort pseudo code is:
-
         if xs has 1 element
             it is sorted, so return xs
         else
@@ -91,10 +111,22 @@ def merge_sorted(xs, cmp=cmp_standard):
             sort the left
             sort the right
             merge the two sorted halves
-
     You should return a sorted version of the input list xs.
     You should not modify the input list xs in any way.
     '''
+    copy_xs = copy.deepcopy(xs)
+
+    if len(xs) == 1:
+        return xs
+    else:
+        mid = len(copy_xs) // 2
+        left = copy_xs[:mid]
+        right = copy_xs[mid:]
+
+        left_sorted = merge_sorted(left, cmp)
+        right_sorted = merge_sorted(right, cmp)
+
+        return _merged(left_sorted, right_sorted, cmp)
 
 
 def quick_sorted(xs, cmp=cmp_standard):
@@ -104,9 +136,7 @@ def quick_sorted(xs, cmp=cmp_standard):
     Instead of splitting the list down the middle,
     a "pivot" value is randomly selected, 
     and the list is split into a "less than" sublist and a "greater than" sublist.
-
     The pseudocode is:
-
         if xs has 1 element
             it is sorted, so return xs
         else
@@ -116,10 +146,36 @@ def quick_sorted(xs, cmp=cmp_standard):
             put all the values equal to p in a list
             sort the greater/less than lists recursively
             return the concatenation of (less than, equal, greater than)
-
     You should return a sorted version of the input list xs.
     You should not modify the input list xs in any way.
     '''
+    if len(xs) == 1:
+        return xs
+    else:
+        pivot = random.randint(0, len(xs) - 1)
+        p = xs[pivot]
+
+        less_p = []
+        greater_p = []
+        equal_p = []
+        
+        for i in xs:
+            comp = cmp(i, p)
+            if comp == -1:
+                less_p.append(i)
+            elif comp == 1:
+                greater_p. append(i)
+            elif comp == 0:
+                equal_p.append(i)
+        
+        less = quick_sorted(less_p, cmp)
+        greater = quick_sorted(greater_p, cmp)
+        equal = equal_p
+
+        return (less + equal + greater)
+
+
+
 
 
 def quick_sort(xs, cmp=cmp_standard):
@@ -135,7 +191,6 @@ def quick_sort(xs, cmp=cmp_standard):
     (We say quick sort has a lower "constant factor" in its runtime.)
     The downside of implementing quick sort in this way is that it will no longer be a [stable sort](https://en.wikipedia.org/wiki/Sorting_algorithm#Stability),
     but this is typically inconsequential.
-
     Follow the pseudocode of the Lomuto partition scheme given on wikipedia
     (https://en.wikipedia.org/wiki/Quicksort#Algorithm)
     to implement quick_sort as an in-place algorithm.
