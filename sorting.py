@@ -126,6 +126,7 @@ def merge_sorted(xs, cmp=cmp_standard):
 
         return _merged(left_merge, right_merge, cmp)
 
+
 def quick_sorted(xs, cmp=cmp_standard):
     '''
     Quicksort is like mergesort,
