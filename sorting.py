@@ -117,18 +117,14 @@ def merge_sorted(xs, cmp=cmp_standard):
     '''
     copy_xs = copy.deepcopy(xs)
 
-    if len(xs) == 1:
+    if len(xs) <= 1:
         return xs
     else:
         mid = len(copy_xs) // 2
-        left = copy_xs[:mid]
-        right = copy_xs[mid:]
+        left_merge = merge_sorted(copy_xs[:mid], cmp)
+        right_merge = merge_sorted(copy_xs[mid:], cmp)
 
-        left_sorted = merge_sorted(left, cmp)
-        right_sorted = merge_sorted(right, cmp)
-
-        return _merged(left_sorted, right_sorted, cmp)
-
+        return _merged(left_merge, right_merge, cmp)
 
 def quick_sorted(xs, cmp=cmp_standard):
     '''
@@ -150,7 +146,7 @@ def quick_sorted(xs, cmp=cmp_standard):
     You should return a sorted version of the input list xs.
     You should not modify the input list xs in any way.
     '''
-    if len(xs) == 1:
+    if len(xs) <= 1:
         return xs
     else:
         pivot = random.randint(0, len(xs) - 1)
